@@ -27,9 +27,8 @@ brews:
     homepage: https://github.com/Agent-Hellboy/fmsh
     description: File Management Shell
     license: GPL-3.0
-    github:
-      owner: Agent-Hellboy
-      name: homebrew-fmsh
+    tap: "Agent-Hellboy/homebrew-fmsh"
     commit_author:
       name: Prince Roshan
       email: princekrroshan01@gmail.com
+    version: ${{ env.GITHUB_REF_NAME }}
