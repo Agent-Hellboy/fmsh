@@ -1,7 +1,6 @@
 package shell
 
 import (
-	"archive/zip"
 	"bufio"
 	"fmt"
 	"io/ioutil"
@@ -31,8 +30,8 @@ func InitializeCommands() {
 	RegisterCommand("clean-tmp", HandleCleanTmp)
 	RegisterCommand("preview", HandlePreview)
 	RegisterCommand("backup", HandleBackup)
-	RegisterCommand("zip", HandleZip)
-	RegisterCommand("unzip", HandleUnzip)
+	// RegisterCommand("zip", HandleZip)
+	// RegisterCommand("unzip", HandleUnzip)
 	RegisterCommand("chmod", HandleChmod)
 	RegisterCommand("open", HandleOpen)
 	RegisterCommand("rename", HandleRename)
@@ -451,112 +450,112 @@ func HandleBackup(args []string) {
 	fmt.Printf("Backup created: %s\n", backupName)
 }
 
-// HandleZip creates a zip archive from specified files
-func HandleZip(args []string) {
-	if len(args) < 2 {
-		fmt.Println("Usage: zip <archive_name> <file1> <file2> ...")
-		return
-	}
+// // HandleZip creates a zip archive from specified files
+// func HandleZip(args []string) {
+// 	if len(args) < 2 {
+// 		fmt.Println("Usage: zip <archive_name> <file1> <file2> ...")
+// 		return
+// 	}
 
-	archiveName := args[0]
-	files := args[1:]
+// 	archiveName := args[0]
+// 	files := args[1:]
 
-	zipFile, err := os.Create(archiveName)
-	if err != nil {
-		fmt.Printf("Error creating zip file: %v\n", err)
-		return
-	}
-	defer zipFile.Close()
+// 	zipFile, err := os.Create(archiveName)
+// 	if err != nil {
+// 		fmt.Printf("Error creating zip file: %v\n", err)
+// 		return
+// 	}
+// 	defer zipFile.Close()
 
-	zipWriter := zip.NewWriter(zipFile)
-	defer zipWriter.Close()
+// 	zipWriter := zip.NewWriter(zipFile)
+// 	defer zipWriter.Close()
 
-	for _, file := range files {
-		err := addFileToZip(zipWriter, file)
-		if err != nil {
-			fmt.Printf("Error adding file to zip: %v\n", err)
-			return
-		}
-	}
+// 	for _, file := range files {
+// 		err := addFileToZip(zipWriter, file)
+// 		if err != nil {
+// 			fmt.Printf("Error adding file to zip: %v\n", err)
+// 			return
+// 		}
+// 	}
 
-	fmt.Printf("Archive created: %s\n", archiveName)
-}
+// 	fmt.Printf("Archive created: %s\n", archiveName)
+// }
 
-func addFileToZip(zipWriter *zip.Writer, filePath string) error {
-	file, err := os.Open(filePath)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
+// func addFileToZip(zipWriter *zip.Writer, filePath string) error {
+// 	file, err := os.Open(filePath)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	defer file.Close()
 
-	info, err := file.Stat()
-	if err != nil {
-		return err
-	}
+// 	info, err := file.Stat()
+// 	if err != nil {
+// 		return err
+// 	}
 
-	header, err := zip.FileInfoHeader(info)
-	if err != nil {
-		return err
-	}
+// 	header, err := zip.FileInfoHeader(info)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	header.Name = filepath.Base(filePath)
-	header.Method = zip.Deflate
+// 	header.Name = filepath.Base(filePath)
+// 	header.Method = zip.Deflate
 
-	writer, err := zipWriter.CreateHeader(header)
-	if err != nil {
-		return err
-	}
+// 	writer, err := zipWriter.CreateHeader(header)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	_, err = os.Copy(writer, file)
-	return err
-}
+// 	_, err = os.Copy(writer, file)
+// 	return err
+// }
 
-// HandleUnzip extracts a zip archive
-func HandleUnzip(args []string) {
-	if len(args) < 1 {
-		fmt.Println("Usage: unzip <archive_name>")
-		return
-	}
+// // HandleUnzip extracts a zip archive
+// func HandleUnzip(args []string) {
+// 	if len(args) < 1 {
+// 		fmt.Println("Usage: unzip <archive_name>")
+// 		return
+// 	}
 
-	archiveName := args[0]
+// 	archiveName := args[0]
 
-	zipReader, err := zip.OpenReader(archiveName)
-	if err != nil {
-		fmt.Printf("Error opening zip file: %v\n", err)
-		return
-	}
-	defer zipReader.Close()
+// 	zipReader, err := zip.OpenReader(archiveName)
+// 	if err != nil {
+// 		fmt.Printf("Error opening zip file: %v\n", err)
+// 		return
+// 	}
+// 	defer zipReader.Close()
 
-	for _, file := range zipReader.File {
-		err := extractFile(file)
-		if err != nil {
-			fmt.Printf("Error extracting file: %v\n", err)
-			return
-		}
-	}
+// 	for _, file := range zipReader.File {
+// 		err := extractFile(file)
+// 		if err != nil {
+// 			fmt.Printf("Error extracting file: %v\n", err)
+// 			return
+// 		}
+// 	}
 
-	fmt.Printf("Archive extracted: %s\n", archiveName)
-}
+// 	fmt.Printf("Archive extracted: %s\n", archiveName)
+// }
 
-func extractFile(file *zip.File) error {
-	filePath := file.Name
-	fmt.Printf("Extracting: %s\n", filePath)
+// func extractFile(file *zip.File) error {
+// 	filePath := file.Name
+// 	fmt.Printf("Extracting: %s\n", filePath)
 
-	reader, err := file.Open()
-	if err != nil {
-		return err
-	}
-	defer reader.Close()
+// 	reader, err := file.Open()
+// 	if err != nil {
+// 		return err
+// 	}
+// 	defer reader.Close()
 
-	targetFile, err := os.Create(filePath)
-	if err != nil {
-		return err
-	}
-	defer targetFile.Close()
+// 	targetFile, err := os.Create(filePath)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	defer targetFile.Close()
 
-	_, err = os.Copy(targetFile, reader)
-	return err
-}
+// 	_, err = os.Copy(targetFile, reader)
+// 	return err
+// }
 
 // HandleChmod changes file permissions
 func HandleChmod(args []string) {
