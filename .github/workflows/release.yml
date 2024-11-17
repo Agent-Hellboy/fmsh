@@ -31,39 +31,3 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Step 4: Fetch tag version, calculate checksum, and update Homebrew formula
-      - name: Update Homebrew Formula
-        run: |
-          VERSION="${GITHUB_REF##*/}"
-          URL="https://github.com/Agent-Hellboy/fmsh/releases/download/${VERSION}/fmsh_${VERSION}_darwin_amd64.tar.gz"
-          SHA256=$(curl -L $URL | shasum -a 256 | awk '{print $1}')
-
-          # Update the Homebrew formula dynamically
-          cat > homebrew/fmsh.rb <<EOL
-          class Fmsh < Formula
-            desc "File Management Shell"
-            homepage "https://github.com/Agent-Hellboy/fmsh"
-            version "${VERSION}"
-            url "${URL}"
-            sha256 "${SHA256}"
-            license "GPL-3.0"
-
-            def install
-              bin.install "fmsh"
-            end
-
-            test do
-              assert_match "fmsh", shell_output("#{bin}/fmsh --help")
-            end
-          end
-          EOL
-
-      # Step 5: Commit the updated formula back to the repository
-      - name: Commit Updated Formula
-        run: |
-          git config --local user.name "GitHub Actions"
-          git config --local user.email "github-actions@github.com"
-          git add homebrew/fmsh.rb
-          git commit -m "Update Homebrew formula for ${VERSION}"
-          git push origin main

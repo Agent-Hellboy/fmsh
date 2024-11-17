@@ -18,22 +18,23 @@ builds:
 release:
   prerelease: auto
 
-universal_binary:
+universal_binaries:
   - id: fmsh-universal
     replace: true
+    goos:
+      - darwin
+    goarch:
+      - amd64
+      - arm64
 
 brews:
-  -
-    name: fmsh
+  - name: fmsh
     homepage: https://github.com/Agent-Hellboy/fmsh
     description: File Management Shell
-    tap:
-      name: homebrew
     license: GPL-3.0
-    path: ./homebrew
+    tap:
+      owner: Agent-Hellboy
+      name: homebrew-fmsh
     commit_author:
       name: Prince Roshan
       email: princekrroshan01@gmail.com
-
-checksums:
-  name: checksums.txt
