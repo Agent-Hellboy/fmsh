@@ -2,7 +2,7 @@ version: 2
 
 builds:
   - binary: fmsh
-    dir: ./cmd 
+    dir: ./cmd # Ensure this points to the directory containing main.go
     goos:
       - linux
       - darwin
@@ -13,8 +13,7 @@ builds:
       - GO111MODULE=on
       - CGO_ENABLED=0
     flags:
-      - -s
-      - -w
+      - -ldflags="-s -w" 
 
 release:
   prerelease: auto
