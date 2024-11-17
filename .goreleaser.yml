@@ -12,8 +12,6 @@ builds:
     env:
       - GO111MODULE=on
       - CGO_ENABLED=0
-    flags:
-      - -ldflags="-s -w" 
 
 release:
   prerelease: auto
