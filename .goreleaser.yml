@@ -33,5 +33,5 @@ brews:
     commit_author:
       name: "Prince Roshan"
       email: "princekrroshan01@gmail.com"
-     token: "{{ .Env.MY_PAT_KEY }}"
-      token_type: "github"
+    token: "{{ .Env.GITHUB_PERSONAL_AUTH_TOKEN }}"
+    token_type: "github"
