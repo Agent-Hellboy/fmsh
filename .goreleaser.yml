@@ -1,16 +1,18 @@
+version: 2
+
 builds:
   - binary: fmsh
-    goos: 
+    goos:
       - linux
       - darwin
-    goarch: 
-      - amd64 
+    goarch:
+      - amd64
       - arm64
     env:
       - GO111MODULE=on
       - CGO_ENABLED=0
-    flags: 
-      - -s 
+    flags:
+      - -s
       - -w
 
 release:
@@ -21,14 +23,14 @@ universal_binary:
     replace: true
 
 brews:
-  - 
+  -
     name: fmsh
     homepage: https://github.com/Agent-Hellboy/fmsh
     description: File Management Shell
     tap:
       name: homebrew
     license: GPL-3.0
-    path: ./homebrew 
+    path: ./homebrew
     commit_author:
       name: Prince Roshan
       email: princekrroshan01@gmail.com
