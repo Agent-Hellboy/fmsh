@@ -24,11 +24,14 @@ universal_binaries:
 
 brews:
   - name: fmsh
-    homepage: https://github.com/Agent-Hellboy/fmsh
-    description: File Management Shell
-    license: GPL-3.0
-    tap: "Agent-Hellboy/homebrew-fmsh"
+    homepage: "https://github.com/Agent-Hellboy/fmsh"
+    description: "File Management Shell"
+    license: "GPL-3.0"
+    repository:
+      owner: "Agent-Hellboy"
+      name: "homebrew-fmsh"
     commit_author:
-      name: Prince Roshan
-      email: princekrroshan01@gmail.com
-    version: ${{ env.GITHUB_REF_NAME }}
+      name: "Prince Roshan"
+      email: "princekrroshan01@gmail.com"
+     token: "{{ .Env.MY_PAT_KEY }}"
+      token_type: "github"
