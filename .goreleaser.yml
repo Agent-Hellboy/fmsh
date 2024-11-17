@@ -21,11 +21,6 @@ release:
 universal_binaries:
   - id: fmsh-universal
     replace: true
-    goos:
-      - darwin
-    goarch:
-      - amd64
-      - arm64
 
 brews:
   - name: fmsh
