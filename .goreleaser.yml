@@ -2,6 +2,7 @@ version: 2
 
 builds:
   - binary: fmsh
+    dir: ./cmd 
     goos:
       - linux
       - darwin
