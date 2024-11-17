@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 permissions:
-  contents: write
+  contents: write 
 
 jobs:
   release:
@@ -25,4 +25,4 @@ jobs:
           version: latest
           args: release --clean
         env:
-          GITHUB_PERSONAL_AUTH_TOKEN: ${{ secrets.MY_PAT_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
