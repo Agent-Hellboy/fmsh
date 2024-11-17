@@ -27,7 +27,7 @@ brews:
     license: "GPL-3.0"
     repository:
       owner: "Agent-Hellboy"
-      name: "homebrew-fmsh"
+      name: "fmsh"
     commit_author:
       name: "Prince Roshan"
       email: "princekrroshan01@gmail.com"
