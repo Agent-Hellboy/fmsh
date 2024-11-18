@@ -8,34 +8,59 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 )
 
-// InitializeCommands registers all the available commands
 func InitializeCommands() {
-	RegisterCommand("echo", HandleEcho)
-	RegisterCommand("ls", HandleLs)
-	RegisterCommand("cd", HandleCd)
-	RegisterCommand("rm", HandleRm)
-	RegisterCommand("mkdir", HandleMkdir)
-	RegisterCommand("cp", HandleCp)
-	RegisterCommand("clear", HandleClear)
-	RegisterCommand("inspect", HandleFsAnalytics)
-	RegisterCommand("search", HandleSearch)
-	RegisterCommand("disk-usage", HandleDiskUsage)
-	RegisterCommand("tree", HandleTree)
-	RegisterCommand("clean-tmp", HandleCleanTmp)
-	RegisterCommand("preview", HandlePreview)
-	RegisterCommand("backup", HandleBackup)
-	// RegisterCommand("zip", HandleZip)
-	// RegisterCommand("unzip", HandleUnzip)
-	RegisterCommand("chmod", HandleChmod)
-	RegisterCommand("open", HandleOpen)
-	RegisterCommand("rename", HandleRename)
-	RegisterCommand("file-history", HandleFileHistory)
+	RegisterCommand("echo", "Echoes back the input text", HandleEcho)
+	RegisterCommand("ls", "Lists the contents of a directory", HandleLs)
+	RegisterCommand("cd", "Changes the current directory", HandleCd)
+	RegisterCommand("rm", "Removes files or directories", HandleRm)
+	RegisterCommand("mkdir", "Creates a new directory", HandleMkdir)
+	RegisterCommand("cp", "Copies files or directories", HandleCp)
+	RegisterCommand("clear", "Clears the terminal screen", HandleClear)
+	RegisterCommand("inspect", "Analyzes the file system", HandleFsAnalytics)
+	RegisterCommand("search", "Searches for files or directories", HandleSearch)
+	RegisterCommand("disk-usage", "Shows disk usage of a directory", HandleDiskUsage)
+	RegisterCommand("tree", "Displays a tree-like structure of directories", HandleTree)
+	RegisterCommand("clean-tmp", "Cleans up temporary files", HandleCleanTmp)
+	RegisterCommand("preview", "Previews the contents of a file", HandlePreview)
+	RegisterCommand("backup", "Backs up files or directories", HandleBackup)
+	RegisterCommand("chmod", "Changes file permissions", HandleChmod)
+	RegisterCommand("open", "Opens a file with its default application", HandleOpen)
+	RegisterCommand("rename", "Renames a file or directory", HandleRename)
+	RegisterCommand("file-history", "Shows the history of a file", HandleFileHistory)
+	RegisterCommand("help", "Lists all available commands", HandleHelp)
+}
+
+// HandleHelp displays the list of available commands and their descriptions
+func HandleHelp(args []string) {
+	fmt.Println("\nAvailable commands:")
+
+	// Extract and sort command names for consistent display
+	names := make([]string, 0, len(CommandRegistry))
+	for name := range CommandRegistry {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+
+	// Determine the maximum widths for alignment
+	maxIndexWidth := len(fmt.Sprintf("%d", len(names)-1)) // Maximum width of the index
+	maxNameWidth := 0
+	for _, name := range names {
+		if len(name) > maxNameWidth {
+			maxNameWidth = len(name)
+		}
+	}
+
+	// Display commands with uniform spacing
+	for i, name := range names {
+		fmt.Printf("%-*d  %-*s -> %s\n", maxIndexWidth, i, maxNameWidth, name, CommandRegistry[name].Description)
+	}
 }
 
 // HandleEcho handles the "echo" command with automatic colors
