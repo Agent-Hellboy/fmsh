@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 permissions:
-  contents: write 
+  contents: write
 
 jobs:
   release:
@@ -17,6 +17,8 @@ jobs:
 
       - name: Set Up Go
         uses: actions/setup-go@v4
+        with:
+          go-version: '1.21.4'
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v4
@@ -26,3 +28,45 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install dpkg-scanpackages
+        run: sudo apt-get update && sudo apt-get install -y dpkg-dev
+
+      - name: Prepare APT Repository
+        run: |
+          mkdir -p apt-repo/dists/stable/main/binary-amd64
+          mkdir -p apt-repo/dists/stable/main/binary-arm64
+
+          for file in dist/*.deb; do
+            arch=$(dpkg --info "$file" | grep Architecture | awk '{print $2}')
+            if [ "$arch" = "amd64" ]; then
+              cp "$file" apt-repo/dists/stable/main/binary-amd64/
+            elif [ "$arch" = "arm64" ]; then
+              cp "$file" apt-repo/dists/stable/main/binary-arm64/
+            fi
+          done
+
+          cd apt-repo/dists/stable/main/binary-amd64
+          dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
+          cd ../binary-arm64
+          dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
+          cd ../../../../../
+
+      - name: Generate Release File
+        run: |
+          cat <<EOF > apt-repo/dists/stable/Release
+          Origin: fmsh
+          Label: fmsh
+          Suite: stable
+          Codename: stable
+          Architectures: amd64 arm64
+          Components: main
+          Description: APT repository for fmsh
+
+
+      - name: Publish APT Repository to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./apt-repo
+          publish_branch: gh-pages

@@ -1,8 +1,10 @@
 version: 2
 
+project_name: fmsh
+
 builds:
   - binary: fmsh
-    dir: ./cmd # Ensure this points to the directory containing main.go
+    dir: ./cmd 
     goos:
       - linux
       - darwin
@@ -31,3 +33,43 @@ brews:
     commit_author:
       name: "Prince Roshan"
       email: "princekrroshan01@gmail.com"
+
+nfpms:
+  - id: deb-package
+    formats:
+      - deb
+    section: utils
+    priority: optional
+    vendor: "Prince Roshan"
+    maintainer: "Prince Roshan <princekrroshan01@gmail.com>"
+    description: |
+      File Management Shell (fmsh) - A lightweight tool for managing files effectively.
+    homepage: "https://github.com/Agent-Hellboy/fmsh"
+    license: GPL-3.0
+    binds:
+      /usr/local/bin/{{ .ProjectName }}: usr/bin/{{ .ProjectName }}
+    metadata:
+      version: "{{ .Version }}"
+      architecture: "{{ .Arch }}"
+    dependencies:
+      - bash
+    recommends:
+      - coreutils
+
+before:
+  hooks:
+    - mkdir -p apt-repo/{dists/stable/main/binary-amd64,dists/stable/main/binary-arm64}
+
+after:
+  hooks:
+    - mv dist/*.deb apt-repo/dists/stable/main/binary-amd64/
+    - dpkg-scanpackages apt-repo/dists/stable/main/binary-amd64 > apt-repo/dists/stable/main/binary-amd64/Packages
+    - gzip -k apt-repo/dists/stable/main/binary-amd64/Packages
+    - echo "APT repository generated at apt-repo/"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
