@@ -87,15 +87,16 @@ jobs:
           Description: APT repository for fmsh
           EOF
       
-      - name: Ensure Main Branch is Checked Out
+      - name: Ensure gh-pages Branch is Checked Out
         run: |
           git fetch origin
-          git checkout main
-  
-      - name: Commit and Push to /docs
+          git checkout gh-pages || git checkout --orphan gh-pages
+      
+      - name: Commit and Push to gh-pages
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add docs/
           git commit -m "Update APT repository in /docs for GitHub Pages"
-          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/Agent-Hellboy/fmsh.git main
+          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/Agent-Hellboy/fmsh.git gh-pages
+      

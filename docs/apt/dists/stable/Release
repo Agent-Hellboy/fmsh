@@ -1,7 +1,0 @@
-Origin: fmsh
-Label: fmsh
-Suite: stable
-Codename: stable
-Architectures: amd64 arm64
-Components: main
-Description: APT repository for fmsh
