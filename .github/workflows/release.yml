@@ -86,7 +86,12 @@ jobs:
           Components: main
           Description: APT repository for fmsh
           EOF
-
+      
+      - name: Ensure Main Branch is Checked Out
+        run: |
+          git fetch origin
+          git checkout main
+  
       - name: Commit and Push to /docs
         run: |
           git config --global user.name "GitHub Actions"
