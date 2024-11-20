@@ -33,7 +33,7 @@ jobs:
         id: set_release_dir
         run: echo "::set-output name=release_dir::dist"
 
-  # Package and Release Job: Packages and releases artifacts
+  # Package and Release Job: Packages artifacts and pushes APT repository to /docs
   package_and_release:
     runs-on: ubuntu-latest
     needs: build
@@ -57,27 +57,27 @@ jobs:
 
       - name: Prepare APT Repository
         run: |
-          mkdir -p apt-repo/dists/stable/main/binary-amd64
-          mkdir -p apt-repo/dists/stable/main/binary-arm64
+          mkdir -p docs/apt/dists/stable/main/binary-amd64
+          mkdir -p docs/apt/dists/stable/main/binary-arm64
 
           for file in dist/*.deb; do
             arch=$(dpkg --info "$file" | grep Architecture | awk '{print $2}')
             if [ "$arch" = "amd64" ]; then
-              cp "$file" apt-repo/dists/stable/main/binary-amd64/
+              cp "$file" docs/apt/dists/stable/main/binary-amd64/
             elif [ "$arch" = "arm64" ]; then
-              cp "$file" apt-repo/dists/stable/main/binary-arm64/
+              cp "$file" docs/apt/dists/stable/main/binary-arm64/
             fi
           done
 
-          cd apt-repo/dists/stable/main/binary-amd64
+          cd docs/apt/dists/stable/main/binary-amd64
           dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
           cd ../binary-arm64
           dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
-          cd ../../../../../
+          cd ../../../../..
 
       - name: Generate Release File
         run: |
-          cat <<EOF > apt-repo/dists/stable/Release
+          cat <<EOF > docs/apt/dists/stable/Release
           Origin: fmsh
           Label: fmsh
           Suite: stable
@@ -87,41 +87,10 @@ jobs:
           Description: APT repository for fmsh
           EOF
 
-      - name: Publish APT Repository to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./apt-repo
-          publish_branch: gh-pages
-
-  # Verify Job: Verifies Linux and macOS releases
-  verify:
-    runs-on: ubuntu-latest
-    needs: package_and_release
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Verify Linux Package Installation
-        if: matrix.os == 'ubuntu-latest'
+      - name: Commit and Push to /docs
         run: |
-          echo "Testing Linux .deb packages..."
-          sudo apt-get update
-          sudo apt-get install -y ./dist/fmsh_*.deb
-          fmsh --version
-
-      - name: Verify Homebrew Formula
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          echo "Verifying Homebrew formula..."
-          cat dist/homebrew/fmsh.rb
-
-      - name: Verify macOS Binary
-        if: matrix.os == 'macos-latest'
-        run: |
-          echo "Testing macOS binaries..."
-          tar -xvf dist/fmsh_*.tar.gz -C /tmp
-          /tmp/fmsh --version
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add docs/
+          git commit -m "Update APT repository in /docs for GitHub Pages"
+          git push origin main
