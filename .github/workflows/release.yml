@@ -62,7 +62,7 @@ jobs:
           Architectures: amd64 arm64
           Components: main
           Description: APT repository for fmsh
-
+          EOF
 
       - name: Publish APT Repository to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -70,3 +70,24 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./apt-repo
           publish_branch: gh-pages
+
+  macos-release:
+    runs-on: macos-latest
+    needs: release  
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set Up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21.4'
+
+      - name: Run GoReleaser for macOS
+        uses: goreleaser/goreleaser-action@v4
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --clean --single-target
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
