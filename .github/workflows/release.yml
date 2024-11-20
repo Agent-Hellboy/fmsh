@@ -33,18 +33,15 @@ jobs:
         id: set_release_dir
         run: echo "::set-output name=release_dir::dist"
 
-  # Package and Release Job: Packages artifacts and pushes APT repository to /docs
-  package_and_release:
+  # Package Job: Packages artifacts
+  package:
     runs-on: ubuntu-latest
     needs: build
+    outputs:
+      dist-dir: ${{ steps.package.outputs.dist-dir }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-
-      - name: Set Up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.21.4'
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v4
@@ -54,6 +51,18 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set Output Directory for Deployment
+        id: package
+        run: echo "::set-output name=dist-dir::dist"
+
+  # Deploy APT Repository Job
+  deploy_apt:
+    runs-on: ubuntu-latest
+    needs: package
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
       - name: Prepare APT Repository
         run: |
@@ -86,12 +95,12 @@ jobs:
           Components: main
           Description: APT repository for fmsh
           EOF
-      
+
       - name: Ensure gh-pages Branch is Checked Out
         run: |
           git fetch origin
           git checkout gh-pages || git checkout --orphan gh-pages
-      
+
       - name: Commit and Push to gh-pages
         run: |
           git config --global user.name "GitHub Actions"
@@ -99,4 +108,3 @@ jobs:
           git add docs/
           git commit -m "Update APT repository in /docs for GitHub Pages"
           git push https://${{ secrets.GITHUB_TOKEN }}@github.com/Agent-Hellboy/fmsh.git gh-pages
-      
