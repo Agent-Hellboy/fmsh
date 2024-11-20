@@ -5,21 +5,21 @@
 class Fmsh < Formula
   desc "File Management Shell"
   homepage "https://github.com/Agent-Hellboy/fmsh"
-  version "0.1.9"
+  version "0.1.10"
   license "GPL-3.0"
 
   on_macos do
     on_intel do
-      url "https://github.com/Agent-Hellboy/fmsh/releases/download/v0.1.9/fmsh_0.1.9_darwin_amd64.tar.gz"
-      sha256 "840135132928b72a1a891e4c5576494a37c1513a805072080951453681434ef8"
+      url "https://github.com/Agent-Hellboy/fmsh/releases/download/v0.1.10/fmsh_0.1.10_darwin_amd64.tar.gz"
+      sha256 "c72ab03630ffdba71176bfdf00ab29f9a29db40ddc51622b1e0b0b62cf23b662"
 
       def install
         bin.install "fmsh"
       end
     end
     on_arm do
-      url "https://github.com/Agent-Hellboy/fmsh/releases/download/v0.1.9/fmsh_0.1.9_darwin_arm64.tar.gz"
-      sha256 "d85d11d95ec15687f28ef7979cb12100ff3a3f51fc1bf68a10bbde449d7d1cde"
+      url "https://github.com/Agent-Hellboy/fmsh/releases/download/v0.1.10/fmsh_0.1.10_darwin_arm64.tar.gz"
+      sha256 "6adb34eb02f3ec7c203ae5cbd760f0f6858f93d1f441cf56ebff8473a470f8bd"
 
       def install
         bin.install "fmsh"
@@ -30,8 +30,8 @@ class Fmsh < Formula
   on_linux do
     on_intel do
       if Hardware::CPU.is_64_bit?
-        url "https://github.com/Agent-Hellboy/fmsh/releases/download/v0.1.9/fmsh_0.1.9_linux_amd64.tar.gz"
-        sha256 "4628ebf8398ff0d1bb2315993274dc1002a07ee4043c3b5606f2e8f5c64e9589"
+        url "https://github.com/Agent-Hellboy/fmsh/releases/download/v0.1.10/fmsh_0.1.10_linux_amd64.tar.gz"
+        sha256 "ccd3217ede325e5f394cd9907ee6b4fbeafc7d63fae8a67c8f9939004e9a2769"
 
         def install
           bin.install "fmsh"
@@ -40,8 +40,8 @@ class Fmsh < Formula
     end
     on_arm do
       if Hardware::CPU.is_64_bit?
-        url "https://github.com/Agent-Hellboy/fmsh/releases/download/v0.1.9/fmsh_0.1.9_linux_arm64.tar.gz"
-        sha256 "5a0a0708b331b7a5f043fbbc2644e5bdcd88004e7f1ddcea1389712e7b6247ae"
+        url "https://github.com/Agent-Hellboy/fmsh/releases/download/v0.1.10/fmsh_0.1.10_linux_arm64.tar.gz"
+        sha256 "ede4843f8d7cb30704969afc790bc3ebe39b9eaece2dbb31d846c60fbb256af2"
 
         def install
           bin.install "fmsh"
