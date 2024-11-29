@@ -1,7 +1,8 @@
-package shell
+package commands
 
 import (
 	"bufio"
+	"fmsh/utils"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -14,28 +15,6 @@ import (
 	"sync"
 	"time"
 )
-
-func InitializeCommands() {
-	RegisterCommand("echo", "Echoes back the input text", HandleEcho)
-	RegisterCommand("ls", "Lists the contents of a directory", HandleLs)
-	RegisterCommand("cd", "Changes the current directory", HandleCd)
-	RegisterCommand("rm", "Removes files or directories", HandleRm)
-	RegisterCommand("mkdir", "Creates a new directory", HandleMkdir)
-	RegisterCommand("cp", "Copies files or directories", HandleCp)
-	RegisterCommand("clear", "Clears the terminal screen", HandleClear)
-	RegisterCommand("inspect", "Analyzes the file system", HandleFsAnalytics)
-	RegisterCommand("search", "Searches for files or directories", HandleSearch)
-	RegisterCommand("disk-usage", "Shows disk usage of a directory", HandleDiskUsage)
-	RegisterCommand("tree", "Displays a tree-like structure of directories", HandleTree)
-	RegisterCommand("clean-tmp", "Cleans up temporary files", HandleCleanTmp)
-	RegisterCommand("preview", "Previews the contents of a file", HandlePreview)
-	RegisterCommand("backup", "Backs up files or directories", HandleBackup)
-	RegisterCommand("chmod", "Changes file permissions", HandleChmod)
-	RegisterCommand("open", "Opens a file with its default application", HandleOpen)
-	RegisterCommand("rename", "Renames a file or directory", HandleRename)
-	RegisterCommand("file-history", "Shows the history of a file", HandleFileHistory)
-	RegisterCommand("help", "Lists all available commands", HandleHelp)
-}
 
 // HandleHelp displays the list of available commands and their descriptions
 func HandleHelp(args []string) {
@@ -70,7 +49,7 @@ func HandleEcho(args []string) {
 		return
 	}
 
-	colorCode := GetRandomColor()
+	colorCode := utils.GetRandomColor()
 	message := strings.Join(args, " ")
 	fmt.Printf("%s%s\033[0m\n", colorCode, message)
 }
@@ -672,4 +651,9 @@ func HandleFileHistory(args []string) {
 	for _, entry := range fileHistory {
 		fmt.Println(entry)
 	}
+}
+
+func HandleExit(args []string) {
+	fmt.Println("Exiting fmsh...")
+	os.Exit(0)
 }

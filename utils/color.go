@@ -1,4 +1,4 @@
-package shell
+package utils
 
 import (
 	"math/rand"

@@ -1,6 +1,7 @@
 package shell
 
 import (
+	"fmsh/commands"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -14,7 +15,7 @@ var history = []string{}
 
 // Start begins the shell session
 func Start() {
-	InitializeCommands()
+	commands.InitializeCommands()
 
 	setHistoryFile()
 	line := liner.NewLiner()
@@ -53,7 +54,7 @@ func Start() {
 		history = append(history, input)
 		line.AppendHistory(input)
 
-		DispatchCommand(input)
+		commands.DispatchCommand(input)
 	}
 }
 
