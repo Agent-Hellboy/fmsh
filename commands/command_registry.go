@@ -67,4 +67,5 @@ func InitializeCommands() {
 	RegisterCommand("q", "Exits the shell", HandleExit)
 	RegisterCommand("summarise", "Summarizes a directory", HandleSummarise)
 	RegisterCommand("analytics", "Analyzes file access patterns", HandleAnalytics)
+	RegisterCommand("time", "Shows the current time", HandleTime)
 }

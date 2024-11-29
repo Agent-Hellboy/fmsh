@@ -657,3 +657,23 @@ func HandleExit(args []string) {
 	fmt.Println("Exiting fmsh...")
 	os.Exit(0)
 }
+
+// HandleTime measures the time taken to execute a command
+func HandleTime(args []string) {
+	if len(args) < 1 {
+		fmt.Println("Usage: time <command> [arguments...]")
+		return
+	}
+
+	command := args[0]
+	commandArgs := args[1:]
+
+	start := time.Now() // Record start time
+
+	DispatchCommand(command + " " + strings.Join(commandArgs, " "))
+
+	elapsed := time.Since(start)
+
+	// Print the elapsed time
+	fmt.Printf("\nCommand executed in: %v\n", elapsed)
+}
