@@ -1,4 +1,4 @@
-package fmsh_test
+package shell_test
 
 import (
 	"fmsh/commands"
