@@ -7,13 +7,10 @@
 
 ## **Key Features**
 
-Check [ImplementedCommands.md](./ImplementedCommands.md).
+### **Performance Optimization with Goroutines**
 
----
-
-## **Performance Optimization with Goroutines**
-
-- The analytics command (`inspect`) leverages **goroutines** to analyze files and directories in parallel, significantly reducing processing time for large directories. Looking forwards to leverage it in other commands
+- Use gorotine to optmise the linux commands like `cp`, `find` and others.
+- e.g the analytics command (`inspect`) leverages **goroutines** to analyze files and directories in parallel, significantly reducing processing time for large directories. Looking forwards to leverage it in other commands
 
 ---
 
@@ -89,6 +86,13 @@ Example commands:
   fmsh> disk-usage
   ```
 
+- **Find File**
+  ```bash 
+    fmsh> find . main.go
+    Searching for files in . with pattern main.go
+    cmd/main.go
+  ```
+
 ---
 
 ## **Commands**
@@ -106,6 +110,8 @@ Example commands:
 | `chmod`            | Modify file permissions.                         |
 | `open`             | Open a file with the system's default application.|
 | `preview`          | Display the first few lines of a file.           |
+
+Several others
 
 ---
 

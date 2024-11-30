@@ -68,4 +68,5 @@ func InitializeCommands() {
 	RegisterCommand("summarise", "Summarizes a directory", HandleSummarise)
 	RegisterCommand("analytics", "Analyzes file access patterns", HandleAnalytics)
 	RegisterCommand("time", "Shows the current time", HandleTime)
+	RegisterCommand("find", "Finds files or directories", HandleFind)
 }

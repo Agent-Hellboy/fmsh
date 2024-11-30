@@ -289,6 +289,81 @@ func HandleSearch(args []string) {
 	}
 }
 
+// HandleFind implements the find command
+func HandleFind(args []string) {
+	if len(args) < 1 {
+		fmt.Println("Usage: find <directory> [filename]")
+		return
+	}
+
+	root := args[0]
+	pattern := ""
+	if len(args) > 1 {
+		pattern = args[1]
+	}
+
+	numCores := runtime.NumCPU()               // Get the number of CPU cores
+	semaphore := make(chan struct{}, numCores) // Limit concurrency to available cores
+
+	var wg sync.WaitGroup
+	results := make(chan string, 100)
+	foundDirs := make(chan string, 100)
+
+	// Recursive function for finding files
+	var findFiles func(string)
+	findFiles = func(dir string) {
+		defer wg.Done()
+
+		semaphore <- struct{}{}        // Acquire a slot
+		defer func() { <-semaphore }() // Release the slot
+
+		entries, err := os.ReadDir(dir)
+		if err != nil {
+			// Silently consume the error and move on
+			return
+		}
+
+		dirHasMatches := false
+		for _, entry := range entries {
+			path := filepath.Join(dir, entry.Name())
+			if entry.IsDir() {
+				wg.Add(1)
+				go findFiles(path)
+			} else if pattern == "" || entry.Name() == pattern {
+				results <- path
+				dirHasMatches = true
+			}
+		}
+
+		if dirHasMatches {
+			foundDirs <- dir
+		}
+	}
+
+	// Start the search
+	wg.Add(1)
+	go findFiles(root)
+
+	// Close results and directories channels after all goroutines complete
+	go func() {
+		wg.Wait()
+		close(results)
+		close(foundDirs)
+	}()
+
+	fmt.Println("Searching for files in", root, "with pattern", pattern)
+	count := 0
+	for result := range results {
+		if count < 10 {
+			fmt.Println(result)
+		} else {
+			fmt.Println("found in many more directories")
+			break
+		}
+		count++
+	}
+}
+
 // HandleDiskUsage calculates the total disk usage of the current directory
 func HandleDiskUsage(args []string) {
 	currentDir, err := os.Getwd()
