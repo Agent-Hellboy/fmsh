@@ -27,7 +27,7 @@ func TestHandleFind(t *testing.T) {
 	done := make(chan error)
 	go func() {
 		_, err := io.Copy(&output, r)
-		r.Close() // Close the read end after copying
+		r.Close()
 		done <- err
 	}()
 
