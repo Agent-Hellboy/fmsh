@@ -66,33 +66,6 @@ Example commands:
   -----------------------------------------
   ```
 
-- **Search Files**:
-  ```bash
-  fmsh> search *.txt
-  ```
-
-- **Create an Archive**:
-  ```bash
-  fmsh> zip archive.zip file1.txt file2.txt
-  ```
-
-- **Extract an Archive**:
-  ```bash
-  fmsh> unzip archive.zip
-  ```
-
-- **Display Disk Usage**:
-  ```bash
-  fmsh> disk-usage
-  ```
-
-- **Find File**
-  ```bash 
-    fmsh> find . main.go
-    Searching for files in . with pattern main.go
-    cmd/main.go
-  ```
-
 ---
 
 ## **Commands**
