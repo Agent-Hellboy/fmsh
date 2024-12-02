@@ -37,7 +37,7 @@
 ---
 
 #### 
- - Currently you can downmload the binary for mac using homebrew 
+ - Currently, you can install the binary for Mac using homebrew 
  
 
 ## **Usage**
