@@ -51,7 +51,6 @@ func InitializeCommands() {
 	RegisterCommand("cp", "Copies files or directories", HandleCp)
 	RegisterCommand("clear", "Clears the terminal screen", HandleClear)
 	RegisterCommand("inspect", "Analyzes the file system", HandleFsAnalytics)
-	RegisterCommand("search", "Searches for files or directories", HandleSearch)
 	RegisterCommand("disk-usage", "Shows disk usage of a directory", HandleDiskUsage)
 	RegisterCommand("tree", "Displays a tree-like structure of directories", HandleTree)
 	RegisterCommand("clean-tmp", "Cleans up temporary files", HandleCleanTmp)
@@ -69,4 +68,5 @@ func InitializeCommands() {
 	RegisterCommand("analytics", "Analyzes file access patterns", HandleAnalytics)
 	RegisterCommand("time", "Shows the current time", HandleTime)
 	RegisterCommand("find", "Finds files or directories", HandleFind)
+	RegisterCommand("undo", "Undoes the last command", HandleUndo)
 }

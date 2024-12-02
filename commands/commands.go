@@ -90,7 +90,7 @@ func HandleCd(args []string) {
 	}
 }
 
-// HandleRm implements the "rm" command
+// HandleRm implements the "rm" command with undo support
 func HandleRm(args []string) {
 	if len(args) == 0 {
 		fmt.Println("Usage: rm <file>")
@@ -98,10 +98,34 @@ func HandleRm(args []string) {
 	}
 
 	path := args[0]
-	err := os.Remove(path)
+
+	// Read the file content for undo
+	content, err := os.ReadFile(path)
+	if err != nil {
+		fmt.Printf("fmsh: rm: Failed to read file for undo: %v\n", err)
+		return
+	}
+
+	// Attempt to remove the file
+	err = os.Remove(path)
 	if err != nil {
 		fmt.Printf("fmsh: rm: %v\n", err)
+		return
 	}
+
+	// Log the delete action in the global UndoManager
+	utils.GlobalUndoManager.Push(utils.Action{
+		Type:    utils.Delete,
+		Source:  path,
+		Content: content,
+	})
+
+	fmt.Println("File deleted:", path)
+}
+
+// HandleUndo implements the "undo" command
+func HandleUndo(args []string) {
+	utils.GlobalUndoManager.Undo()
 }
 
 // HandleMkdir implements the "mkdir" command
@@ -226,67 +250,6 @@ func HandleFsAnalytics(args []string) {
 		fmt.Printf("Most recently modified file: %s (Modified at: %s)\n", mostRecentFile, mostRecentModTime.Format(time.RFC1123))
 	}
 	fmt.Println("-----------------------------------------")
-}
-
-// HandleSearch implements the search command with wildcard support
-func HandleSearch(args []string) {
-	if len(args) == 0 {
-		fmt.Println("Usage: search <pattern>")
-		return
-	}
-
-	// Get the search pattern
-	pattern := args[0]
-
-	// Get the current working directory
-	currentDir, err := os.Getwd()
-	if err != nil {
-		fmt.Printf("Error: Unable to get the current directory: %v\n", err)
-		return
-	}
-
-	fmt.Printf("Searching for '%s' in '%s'...\n", pattern, currentDir)
-
-	// Counter for matches
-	matchCount := 0
-
-	// Walk the directory and find matches
-	err = filepath.Walk(currentDir, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			fmt.Printf("Error accessing path %s: %v\n", path, err)
-			return nil // Skip the file on error
-		}
-
-		// Match the file or directory name with the pattern
-		matched, err := filepath.Match(pattern, filepath.Base(path))
-		if err != nil {
-			fmt.Printf("Error matching pattern: %v\n", err)
-			return nil
-		}
-
-		if matched {
-			// Print the matched file/directory
-			matchCount++
-			if info.IsDir() {
-				fmt.Printf("[DIR]  %s\n", path)
-			} else {
-				fmt.Printf("[FILE] %s\n", path)
-			}
-		}
-		return nil
-	})
-
-	if err != nil {
-		fmt.Printf("Error walking through the directory: %v\n", err)
-		return
-	}
-
-	// Summary of matches
-	if matchCount == 0 {
-		fmt.Println("No matches found.")
-	} else {
-		fmt.Printf("Found %d match(es).\n", matchCount)
-	}
 }
 
 // HandleFind implements the find command
