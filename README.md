@@ -1,7 +1,7 @@
 
 # **fmsh - File Management Shell**
 
-[fmsh](./fmsh.png)
+![fmsh](./fmsh.png)
 
 `fmsh` is a lightweight and high-performance file management shell designed to streamline file system operations and analytics. The shell provides a user-friendly interface to manage files, perform advanced analytics, and execute tasks efficiently, leveraging the power of Go’s **goroutines** for enhanced performance.
 
