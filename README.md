@@ -13,6 +13,7 @@
 
 - Use gorotine to optmise the linux commands like `cp`, `find` and others.
 - e.g the analytics command (`inspect`) leverages **goroutines** to analyze files and directories in parallel, significantly reducing processing time for large directories. Looking forwards to leverage it in other commands
+- Undo functionality for rm like commands
 
 ---
 
