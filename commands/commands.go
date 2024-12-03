@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmsh/utils"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -14,6 +15,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/h2non/filetype"
 )
 
 // HandleHelp displays the list of available commands and their descriptions
@@ -714,4 +717,134 @@ func HandleTime(args []string) {
 
 	// Print the elapsed time
 	fmt.Printf("\nCommand executed in: %v\n", elapsed)
+}
+
+// OrganizeDirectory organizes files into folders based on their type in parallel
+func OrganiseDirectory(directory string) {
+	undoDir := filepath.Join(directory, ".undo")
+	os.MkdirAll(undoDir, os.ModePerm) // Create an undo directory to track changes
+
+	var wg sync.WaitGroup         // WaitGroup to synchronize goroutines
+	var mu sync.Mutex             // Mutex to protect shared resources
+	fileChan := make(chan string) // Channel for file paths
+	errorChan := make(chan error) // Channel for errors
+	done := make(chan struct{})   // Done channel to signal completion
+	fileCount := 0                // Count of files processed (for tracking)
+
+	// Worker goroutine to process files
+	go func() {
+		for path := range fileChan {
+			func(path string) {
+				defer wg.Done()
+
+				file, err := os.Open(path)
+				if err != nil {
+					errorChan <- err
+					return
+				}
+				defer file.Close()
+
+				buf := make([]byte, 261)
+				_, err = file.Read(buf)
+				if err != nil && err != io.EOF {
+					errorChan <- err
+					return
+				}
+
+				kind, _ := filetype.Match(buf)
+				var fileType string
+				if kind != filetype.Unknown {
+					fileType = kind.Extension
+				} else {
+					fileType = "unknown"
+				}
+
+				// Ensure directory creation is thread-safe
+				targetDir := filepath.Join(directory, fileType)
+				mu.Lock()
+				os.MkdirAll(targetDir, os.ModePerm)
+				mu.Unlock()
+
+				// Move the file to its corresponding folder
+				targetPath := filepath.Join(targetDir, filepath.Base(path))
+				undoPath := filepath.Join(undoDir, filepath.Base(path))
+				err = os.Rename(path, targetPath)
+				if err != nil {
+					errorChan <- err
+					return
+				}
+
+				// Track the original location in the undo directory
+				mu.Lock()
+				undoFile, err := os.Create(undoPath)
+				mu.Unlock()
+				if err != nil {
+					errorChan <- err
+					return
+				}
+				defer undoFile.Close()
+				_, err = undoFile.WriteString(path)
+				if err != nil {
+					errorChan <- err
+					return
+				}
+
+				// Increment file count
+				mu.Lock()
+				fileCount++
+				mu.Unlock()
+			}(path)
+		}
+		close(done)
+	}()
+
+	// Walk the directory and send files to the channel
+	go func() {
+		defer close(fileChan)
+		err := filepath.Walk(directory, func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+
+			// Skip directories and the undo directory itself
+			if info.IsDir() || strings.Contains(path, ".undo") {
+				return nil
+			}
+
+			wg.Add(1)
+			fileChan <- path
+			return nil
+		})
+
+		if err != nil {
+			errorChan <- err
+		}
+	}()
+
+	go func() {
+		wg.Wait()
+		close(errorChan)
+	}()
+
+	for {
+		select {
+		case err := <-errorChan:
+			if err != nil {
+				fmt.Printf("Error organizing file: %v\n", err)
+			}
+		case <-done:
+			fmt.Printf("Directory organized successfully. Total files processed: %d\n", fileCount)
+			return
+		}
+	}
+}
+
+func HandleOrganize(args []string) {
+	if len(args) < 1 {
+		fmt.Println("Usage: organize <directory>")
+		return
+	}
+
+	directory := args[0]
+	OrganiseDirectory(directory)
 }

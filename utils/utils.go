@@ -51,8 +51,8 @@ func (um *UndoManager) Undo() {
 
 	switch action.Type {
 	case Delete:
-		// Undo file deletion (restore file from Content)
 		if action.Content != nil {
+			// Undo file deletion
 			err := os.WriteFile(action.Source, action.Content, 0644)
 			if err != nil {
 				fmt.Printf("Undo: Failed to restore file: %v\n", err)
@@ -60,13 +60,21 @@ func (um *UndoManager) Undo() {
 				fmt.Println("Undo: File restored:", action.Source)
 			}
 		} else {
-			// Restore directory
+			// Undo directory deletion
 			err := os.Mkdir(action.Source, 0755)
 			if err != nil {
 				fmt.Printf("Undo: Failed to restore directory: %v\n", err)
 			} else {
 				fmt.Println("Undo: Directory restored:", action.Source)
 			}
+		}
+	case Move:
+		// Undo file move
+		err := os.Rename(action.Dest, action.Source)
+		if err != nil {
+			fmt.Printf("Undo: Failed to move file: %v\n", err)
+		} else {
+			fmt.Printf("Undo: Moved file back to %s\n", action.Source)
 		}
 	default:
 		fmt.Println("Unknown action type")
@@ -83,7 +91,7 @@ func (um *UndoManager) Redo() {
 
 	switch action.Type {
 	case Create:
-		// Redo file creation (restore file from Content)
+		// Redo file creation
 		if action.Content != nil {
 			err := os.WriteFile(action.Source, action.Content, 0644)
 			if err != nil {
@@ -92,13 +100,21 @@ func (um *UndoManager) Redo() {
 				fmt.Println("Redo: File restored:", action.Source)
 			}
 		} else {
-			// Restore directory
+			// Redo directory creation
 			err := os.Mkdir(action.Source, 0755)
 			if err != nil {
 				fmt.Printf("Redo: Failed to restore directory: %v\n", err)
 			} else {
 				fmt.Println("Redo: Directory restored:", action.Source)
 			}
+		}
+	case Move:
+		// Redo file move
+		err := os.Rename(action.Source, action.Dest)
+		if err != nil {
+			fmt.Printf("Redo: Failed to move file: %v\n", err)
+		} else {
+			fmt.Printf("Redo: Moved file to %s\n", action.Dest)
 		}
 	default:
 		fmt.Println("Unknown action type")
