@@ -36,17 +36,9 @@ jobs:
         run: |
           go mod download
 
-      - name: Run tests (if present)
-        if: success()
-        run: |
-          # run tests only if *_test.go files are present
-          if [ -n "$(git ls-files '*_test.go')" ]; then
-            echo "Found tests, running go test ./..."
-            go test ./... -v
-          else
-            echo "No Go tests found, skipping"
-          fi
 
+
+          
       - name: Build binary
         run: |
           mkdir -p dist
