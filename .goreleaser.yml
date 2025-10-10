@@ -1,5 +1,4 @@
 version: 2
-
 project_name: fmsh
 
 builds:
@@ -22,17 +21,21 @@ universal_binaries:
   - id: fmsh-universal
     replace: true
 
-brews:
-  - name: fmsh
-    homepage: "https://github.com/Agent-Hellboy/fmsh"
-    description: "File Management Shell"
-    license: "GPL-3.0"
-    repository:
-      owner: "Agent-Hellboy"
-      name: "fmsh"
-    commit_author:
-      name: "Prince Roshan"
-      email: "princekrroshan01@gmail.com"
+## Homebrew publishing disabled for fork testing
+## Keep this commented in forks to avoid attempting to push formulae to the upstream
+## repository (Agent-Hellboy/fmsh). When merged upstream, the maintainer can
+## safely uncomment and configure the appropriate secret (HOMEBREW_GITHUB_TOKEN).
+# brews:
+#   - name: fmsh
+#     homepage: "https://github.com/Agent-Hellboy/fmsh"
+#     description: "File Management Shell"
+#     license: "GPL-3.0"
+#     repository:
+#       owner: "Agent-Hellboy"
+#       name: "fmsh"
+#     commit_author:
+#       name: "Prince Roshan"
+#       email: "princekrroshan01@gmail.com"
 
 nfpms:
   - id: deb-package
