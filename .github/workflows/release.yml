@@ -35,21 +35,16 @@ jobs:
       - name: Build binary
         run: |
           mkdir -p dist
-          # Use RUNNER_OS to differentiate runner platforms (Linux vs macOS)
-          if [ "$RUNNER_OS" = "macOS" ]; then
-            go build -o dist/fmsh-darwin-amd64 ./cmd
-          else
-            go build -o dist/fmsh-linux-amd64 ./cmd
-          fi
+          goos=$(go env GOOS)
+          goarch=$(go env GOARCH)
+          go build -o "dist/fmsh-${goos}-${goarch}" ./cmd
 
       - name: Set artifact name
         id: set-name
         run: |
-          if [ "$RUNNER_OS" = "macOS" ]; then
-            echo "name=macos" >> $GITHUB_OUTPUT
-          else
-            echo "name=linux" >> $GITHUB_OUTPUT
-          fi
+          goos=$(go env GOOS)
+          goarch=$(go env GOARCH)
+          echo "name=${goos}-${goarch}" >> $GITHUB_OUTPUT
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
