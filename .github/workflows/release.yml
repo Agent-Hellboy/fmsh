@@ -9,102 +9,26 @@ permissions:
   contents: write
 
 jobs:
-  # Build Job: Compiles the binaries
-  build:
-    runs-on: ubuntu-latest
-    outputs:
-      release_dir: ${{ steps.set_release_dir.outputs.release_dir }}
+  # fmsh is macOS-only: GoReleaser builds the darwin binaries (and universal
+  # binary) and publishes the release + Homebrew formula.
+  goreleaser:
+    runs-on: macos-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set Up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version: '1.21.4'
-
-      - name: Build Binaries
-        id: build_binaries
-        run: |
-          mkdir -p dist
-          go build -o dist/fmsh cmd/main.go
-
-      - name: Set Output Directory
-        id: set_release_dir
-        run: echo "::set-output name=release_dir::dist"
-
-  # Package Job: Packages artifacts
-  package:
-    runs-on: ubuntu-latest
-    needs: build
-    outputs:
-      dist-dir: ${{ steps.package.outputs.dist-dir }}
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+          go-version-file: go.mod
 
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v4
+        uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
           version: latest
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set Output Directory for Deployment
-        id: package
-        run: echo "::set-output name=dist-dir::dist"
-
-  # Deploy APT Repository Job
-  deploy_apt:
-    runs-on: ubuntu-latest
-    needs: package
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Prepare APT Repository
-        run: |
-          mkdir -p docs/apt/dists/stable/main/binary-amd64
-          mkdir -p docs/apt/dists/stable/main/binary-arm64
-
-          for file in dist/*.deb; do
-            arch=$(dpkg --info "$file" | grep Architecture | awk '{print $2}')
-            if [ "$arch" = "amd64" ]; then
-              cp "$file" docs/apt/dists/stable/main/binary-amd64/
-            elif [ "$arch" = "arm64" ]; then
-              cp "$file" docs/apt/dists/stable/main/binary-arm64/
-            fi
-          done
-
-          cd docs/apt/dists/stable/main/binary-amd64
-          dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
-          cd ../binary-arm64
-          dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
-          cd ../../../../..
-
-      - name: Generate Release File
-        run: |
-          cat <<EOF > docs/apt/dists/stable/Release
-          Origin: fmsh
-          Label: fmsh
-          Suite: stable
-          Codename: stable
-          Architectures: amd64 arm64
-          Components: main
-          Description: APT repository for fmsh
-          EOF
-
-      - name: Ensure gh-pages Branch is Checked Out
-        run: |
-          git fetch origin
-          git checkout gh-pages || git checkout --orphan gh-pages
-
-      - name: Commit and Push to gh-pages
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git add docs/
-          git commit -m "Update APT repository in /docs for GitHub Pages"
-          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/Agent-Hellboy/fmsh.git gh-pages

@@ -21,11 +21,10 @@ universal_binaries:
   - id: fmsh-universal
     replace: true
 
-brews:
+homebrew_casks:
   - name: fmsh
     homepage: "https://github.com/Agent-Hellboy/fmsh"
     description: "A black box recorder for AI-driven development on macOS"
-    license: "GPL-3.0"
     repository:
       owner: "Agent-Hellboy"
       name: "fmsh"
