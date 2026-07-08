@@ -20,6 +20,7 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version-file: go.mod
+        cache: true
 
     - name: Build
       run: go build -o fmsh ./cmd/fmsh

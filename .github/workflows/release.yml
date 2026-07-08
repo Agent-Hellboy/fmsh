@@ -10,7 +10,8 @@ permissions:
 
 jobs:
   # fmsh is macOS-only: GoReleaser builds the darwin binaries (and universal
-  # binary) and publishes the release + Homebrew formula.
+  # binary) and publishes the GitHub Release plus the Homebrew cask.
+  # GH_PAT is a PAT with repo + workflow scopes used for the release/tap pushes.
   goreleaser:
     runs-on: macos-latest
     steps:
@@ -23,6 +24,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
+          cache: true
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
@@ -31,4 +33,4 @@ jobs:
           version: latest
           args: release --clean
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
