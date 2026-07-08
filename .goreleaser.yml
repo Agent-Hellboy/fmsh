@@ -4,9 +4,8 @@ project_name: fmsh
 
 builds:
   - binary: fmsh
-    dir: ./cmd
+    main: ./cmd/fmsh
     goos:
-      - linux
       - darwin
     goarch:
       - amd64
@@ -25,7 +24,7 @@ universal_binaries:
 brews:
   - name: fmsh
     homepage: "https://github.com/Agent-Hellboy/fmsh"
-    description: "File Management Shell"
+    description: "A black box recorder for AI-driven development on macOS"
     license: "GPL-3.0"
     repository:
       owner: "Agent-Hellboy"
@@ -33,23 +32,6 @@ brews:
     commit_author:
       name: "Prince Roshan"
       email: "princekrroshan01@gmail.com"
-
-nfpms:
-  - id: deb-package
-    formats:
-      - deb
-    section: utils
-    priority: optional
-    vendor: "Prince Roshan"
-    maintainer: "Prince Roshan <princekrroshan01@gmail.com>"
-    description: |
-      File Management Shell (fmsh) - A lightweight tool for managing files effectively.
-    homepage: "https://github.com/Agent-Hellboy/fmsh"
-    license: GPL-3.0
-    dependencies:
-      - bash
-    recommends:
-      - coreutils
 
 changelog:
   sort: asc
