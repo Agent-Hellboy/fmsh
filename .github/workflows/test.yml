@@ -1,5 +1,5 @@
-# This workflow will build a golang project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+# Build and test fmsh (macOS-only).
+# https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
 
 name: Test
 
@@ -8,11 +8,11 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
-
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
     - uses: actions/checkout@v4
 
@@ -23,7 +23,10 @@ jobs:
         cache: true
 
     - name: Build
-      run: go build -o fmsh ./cmd
+      run: go build -o fmsh ./cmd/fmsh
+
+    - name: Vet
+      run: go vet ./...
 
     - name: Test
-      run: go test -v ./...
+      run: go test ./...
