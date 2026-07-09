@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="fmsh.png" alt="fmsh" width="320"/>
-</p>
-
 <h1 align="center">fmsh — Forensic Machine Shell</h1>
 
 <p align="center"><b>A black box recorder for AI-driven development on macOS.</b></p>
