@@ -127,4 +127,4 @@ See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed technical documentation
 
 ## License
 
-GPL-3.0 — see [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE).
